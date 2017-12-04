@@ -1,4 +1,9 @@
-*.jdb
-*.pyc
-temp*
-*.xlsx
+*.jdb 
+##We don't want you to see any bank files
+*.pyc 
+###Compiled files aren't needed.
+temp* 
+###Why would you want to see any?
+*.xlsx 
+##This is used in conversion from .jdb files, so you shouldn't see it
+#because it contains the info from the .jdb files
