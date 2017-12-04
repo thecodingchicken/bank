@@ -1,9 +1,10 @@
 import pickle
-from utils import file_exists,maxnumber,get_date
+from utils import file_exists,maxnumber,get_date,get_ending_bal
 from jutils import *
 import time
 import sys
 import decimal
+import copy
 from Record import Record
 class User():
     
@@ -22,9 +23,12 @@ If it gets an EOF error, the db is empty.  """
             self.database.sort(key=self.sorter)
             self.nextnum=maxnumber(self.database)+1#When making new checks, find
             #the max Record.number.  Add one.  That is your next check number
+            self.ending_bal=get_ending_bal(self.database)
         except EOFError:##If you get EOFError, then you 
             self.database=[]#have an empty database
             self.nextnum=0
+            self.ending_bal=0
+            jprint("\n******No records found.  Creating empty record field.")
     def add(self,rec):
         """rec is a valid Record.  Use this function when possible, because
 the database has no checking.  It will also filter out duplicates.  """
@@ -33,6 +37,7 @@ the database has no checking.  It will also filter out duplicates.  """
             self.database.append(rec)## db is actually just a list
         self.database=self.remove_dups()##get rid of duplicates
         self.database.sort(key=self.sorter)
+        self.ending_bal=get_ending_bal(self.database)
     def remove_dups(self):
         """remove duplicates from the database.  It does so very easily.  It
 iterates using an adaptive funtion that returns range in python3 and xrange in
@@ -42,6 +47,7 @@ to the list.  """
         for i in jrange()(len(self.database)):
             if self.database[i] not in new_db:
                 new_db.append(self.database[i])
+        self.ending_bal=get_ending_bal(self.database)
         return new_db
     def save(self):
         "save the database to self.file_n in 'rb' mode"
@@ -72,8 +78,10 @@ to the list.  """
     def __repr__(self):
         self.database.sort(key=self.sorter)
         self.database=self.remove_dups()
-        string="{0} at {1} checks".format(str(j.__class__),
-                                          str(len(j.database)))
+        self.ending_bal=get_ending_bal(self.database)
+        string="{0}, {1} check(s) balance ${2}".format(str(self.__class__),
+                                          str(len(self.database)),
+                                                  self.ending_bal)
         return string
     def make_rec(self):
         number=jinput("Number(enter nothing for the next check): ")
@@ -113,4 +121,7 @@ to the list.  """
             elif depo=='n':depo=False;break
             else:jprint("Please enter one of the below(%s)"%', '.join(choices))
         rec=Record(number,date,details,to,money,depo)
+        self.ending_bal=get_ending_bal(self.database)
         return rec
+    def sort(self):
+        self.database.sort(key=self.sorter)

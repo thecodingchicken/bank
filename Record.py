@@ -1,7 +1,20 @@
+"""Record.py
+bank/Record.py
+
+This file needs the following modules:
+    decimal
+This file needs the following local modules:
+    jutils
+
+
+"""
 from decimal import Decimal
 from jutils import *
 __all__=["Record"]
 class Record():
+    """Record()
+This is a row for a checking account.  
+"""
     def __init__(self,number,date,details,to,amt,depo=False):
         """__init__(number,date,details,to,amt,depo=False)
     This is the input for object Record.  number is the number of the check.
@@ -22,6 +35,36 @@ class Record():
         self.amt=Decimal(amt)
         self.to=to
         self.depo=bool(depo)
+    def is_same(self,other):
+        """check to see if other==self"""
+    def lt(self,other):
+        "Return self<other.  Compare by date"
+        if not isinstance(other,Record):
+            raise TypeError("other is not of class Record")
+        if self.date[2]<other.date[2]:
+            return True
+        elif self.date[1]<other.date[1]:
+            return True
+        elif self.date[0]<other.date[0]:
+            return True
+        return False
+    def gt(self,other):
+        if not isinstance(other,Record):
+            raise TypeError("other is not of class Record")
+        if   self.date[2]>other.date[2]:
+            return True
+        elif self.date[1]>other.date[1]:
+            return True
+        elif self.date[0]>other.date[0]:
+            return True
+        return False
+    def eq(self,other):
+        if not isinstance(other,Record):
+            raise TypeError("other is not of class Record")
+        if self.date==other.date:return True
+        return False
+    
+    
     def return_line(self):
         if len(self.details)>27:
             bar="%s..."%self.details[:24]
@@ -42,7 +85,7 @@ pos(money)"""
             return abs(self.amt)
         else:
             return abs(self.amt)*-1
-    def __eq__ (self,other,full=False):
+    def __eq__(self,other,full=False):
         """return if other is equal to self.
 If full=False, then it will only compare the number.
 If full=True,  then it will compare every part"""
@@ -72,3 +115,12 @@ If full=True,  then it will compare every part"""
 ##    def __repr__(self):
 ##        return "#%6d %2d/%2d/%4d \"%s\" $%8.2f \"\"\"%s\"\"\""%(
 ##            self.number,*self.date,self.to,self.amt,self.details)
+    def to_csv(self,sep=''):
+        "Return the record object in csv format"
+        raise NotImplementedError("Not made yet")
+    
+if __name__=='__main__':
+    a=Record(1001,(10,11,2017),'test','test',100)
+    b=Record(1001,(10,11,2017),'tes1','tes1',1001)
+    print(a>b,a<b,a==b,a==b)
+    import Record
