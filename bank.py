@@ -23,7 +23,7 @@ It uses the "decimal" program.
 From the start, it is python2 and python3 compatible.
 """
 import time
-a=time.time()
+start_t=time.time()
 import sys
 import os
 import decimal
@@ -33,7 +33,7 @@ from decimal import Decimal
 from Record import Record
 from user import User
 import shutil
-try:from matplotlib import pyplot as plt
+try:from matplotlib import pyplot as plt;import matplotlib
 except:
     sys.stdout.write('Sorry, but you don\'t have matplotlib.\n')
     sys.stdout.write('Use pip install matplotlib\n')
@@ -42,17 +42,17 @@ try:import xlsxwriter as xlwriter
 except:
     sys.stdout.write('Sorry, but you don\'t have xlsxwriter.\n')
     sys.stdout.write('Use pip install xlsxwriter\n')
-##    sys.exit(1)
+    sys.exit(1)
 from jutils import jprint,jrange,jinput
 from utils import file_exists,get_date,printdict,get_ending_bal,change_one
 from utils import dump_to_excel,get_graph_money
 b=time.time()
-jprint("Took %f seconds to load modules"%(b-a))
-a=time.time()
-copy_to="C:\\Users\\Joshua\\Python\\files\\text_file_browser\\bank"
-os.system("explorer.exe %s"%copy_to);os.system("explorer.exe %s"%'.')
-b=time.time()
-jprint("Took %f seconds to copy over files"%(b-a))
+jprint("Took %f seconds to load modules"%(b-start_t))
+##a=time.time()
+##copy_to="C:\\Users\\Joshua\\Python\\files\\text_file_browser\\bank"
+##os.system("explorer.exe %s"%copy_to);os.system("explorer.exe %s"%'.')
+##b=time.time()
+##jprint("Took %f seconds to copy over files"%(b-a))
 __all__=['paper_copy','run','db_name','jprint','jrange','jinput']
 def paper_copy(user_obj,debug=False):
     b=time.time()
@@ -147,7 +147,7 @@ To learn more, try it out([Font size 3]or look at the source :-) )
             try:name=jinput('Name: ')
             except:continue
             else:
-                if re.findall(r'[^A-Za-z0-9_\-\\]',name)!=[]:
+                if re.findall(r'[^A-Za-z0-9 _\-\\]',name)!=[]:
                     jprint("Sorry, but that isn't a good file name")
                     continue
                 dump_to_excel(j,name)
@@ -281,6 +281,7 @@ db_name="bank.jdb"
 ##j.add(a)##Testing
 ##j.add(b)##Testing
 if __name__=='__main__':
+    jprint("Set up in %f seconds"%(time.time()-start_t))
     run(db_name)
 else:
     pass
