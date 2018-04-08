@@ -1,11 +1,9 @@
 import pickle
-from utils import file_exists,maxnumber,get_date,get_ending_bal
-from jutils import *
-import time
 import sys
 import decimal
-import copy
-from Record import Record
+from record import Record
+from utils import file_exists,maxnumber,get_date,get_ending_bal
+from jutils import *
 class User():
     
     def __init__(self,file_n):
@@ -68,11 +66,11 @@ to the list.  """
             if self.database[i].depo==True:
                 string+="#%-6d   $%-12s from %s\n"%(self.database[i].number,
                                            foo,
-                                           self.database[i].to)
+                                           self.database[i].to_person)
             else:
                 string+="#%-6d   $%-12s to %s\n"%(self.database[i].number,
                                            foo,
-                                           self.database[i].to)
+                                           self.database[i].to_person)
 ##        jprint(string)
         return string
     def __repr__(self):
@@ -107,8 +105,9 @@ to the list.  """
         money="w"
         while True:
             money=jinput("Money: ")
-            try:money=abs(decimal.Decimal(money))
-            except decimal.InvalidOperation as e:
+            try:
+                money=abs(decimal.Decimal(money))
+            except decimal.InvalidOperation:
                 jprint("Invalid amount.  \nPlease only enter the dollars and")
                 jprint("cents.  Example 100.34")
             else:break
@@ -124,4 +123,5 @@ to the list.  """
         self.ending_bal=get_ending_bal(self.database)
         return rec
     def sort(self):
+        "sort the database"
         self.database.sort(key=self.sorter)

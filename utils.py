@@ -2,12 +2,12 @@ import os
 import sys
 from jutils import *
 import time
-from Record import Record
+from record import Record
 try:import xlsxwriter as xlwriter
 except:
     sys.stdout.write('Sorry, but you don\'t have xlsxwriter.\n')
     sys.stdout.write('Use pip install xlsxwriter\n')
-##    sys.exit(1)
+    sys.exit(1)
 __all__=["file_exists",'maxnumber','get_date','printdict','get_ending_bal',
          'change_one']
 def file_exists(db_name):
@@ -113,10 +113,10 @@ def change_one(record):
     else:
         details=record.details
     jprint("\n")
-    jprint("Current person to is \"%s\""%record.to)
+    jprint("Current person to is \"%s\""%record.to_person)
     if jinput("Change it(Y/n)? ")[0].lower()=='y':
         to=jinput("To:  ")
-    else:to=record.to
+    else:to=record.to_person
     jprint("\n")
     jprint("Current amount of money is $%-8.2f"%record.amt)
     if jinput("Change it(Y/n)? ")[0].lower()=='y':
@@ -136,6 +136,7 @@ def change_one(record):
         if choice=='y':
             depo=True
         else:depo=False
+    else:depo=record.depo
     return Record(number,date,details,to,amt,depo)
 def dump_to_excel(database,filename):
     """This function takes a User object and a filename string.
@@ -147,23 +148,29 @@ NUMBER  DATE  INFO  AMOUNT"""
     filen=filename+'.xlsx'
     workbook=xlwriter.Workbook(filen)
     worksheet=workbook.add_worksheet()
+    cell_format = workbook.add_format({'bold': False, 'font_color': 'black'})
+    cell_format.set_align('left')
     row=1
     col=0
     maxlength=10
+    worksheet.write(0,0,'Number', cell_format)
+    worksheet.write(0,1,"Date", cell_format)
+    worksheet.write(0,2,'Info', cell_format)
+    worksheet.write(0,3,'Amount', cell_format)
+    worksheet.write(0,4,'Total', cell_format)
     for record in database.database:
-        worksheet.write(row,col,record.number)
+        worksheet.write(row,col,record.number,cell_format)
         worksheet.write(row,col+1,'%2d/%2d/%2s'%(record.date[0],
                                                  record.date[1],
-                                                 record.date[2]))
-        worksheet.write(row,col+2,record.details.replace('\n','  '))
+                                                 record.date[2]), cell_format)
+        worksheet.write(row,col+2,record.details.replace('\n','  '),
+                        cell_format)
         if maxlength<len(record.details):maxlength=len(record.details)
-        worksheet.write(row,col+3,record.return_money())
+        worksheet.write(row,col+3,record.return_money(), cell_format)
         row+=1
-    worksheet.write(0,0,'Number')
-    worksheet.write(0,1,"Date")
-    worksheet.write(0,2,'Info')
-    worksheet.write(0,3,'Amount')
-    worksheet.set_column(2, 2, maxlength+5)
+    worksheet.set_column(2, 2, maxlength)
+    worksheet.set_column(1,1,15)
+    worksheet.write(len(database.database),4,"=SUM(D:D)")
     workbook.close()
     return
 def get_graph_money(user):

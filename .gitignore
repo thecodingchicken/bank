@@ -7,3 +7,5 @@ temp*
 *.xlsx 
 ##This is used in conversion from .jdb files, so you shouldn't see it
 #because it contains the info from the .jdb files
+*.sublime-project
+*.sublime-workspace
